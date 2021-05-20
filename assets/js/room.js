@@ -24,7 +24,7 @@ window.addEventListener("DOMContentLoaded", ()=>{
 
     var peer = new Peer(undefined, {
         path: "/peerjs",
-        host: "/",
+        host: "https://ppanonymouschat.herokuapp.com/",
         port: "443",
     });
 
