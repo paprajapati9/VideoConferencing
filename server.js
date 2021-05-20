@@ -4,6 +4,8 @@ const app = express();
 const server = require("http").Server(app);
 const { v4: uuidv4 } = require("uuid");
 
+app.use(require('cors')())
+
 const io = require("socket.io")(server, {
     cors: {
       origin: '*'
