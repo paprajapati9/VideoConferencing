@@ -25,8 +25,8 @@ window.addEventListener("DOMContentLoaded", ()=>{
 
     var peer = new Peer(undefined, {
         path: '/',
-        host: 'localhost',
-        port: "5000",
+        host: 'ppanonymouschat.herokuapp.com',
+        port: "443",
     });
 
     // let myVideoStream;
