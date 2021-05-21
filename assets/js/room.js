@@ -23,11 +23,18 @@ window.addEventListener("DOMContentLoaded", ()=>{
 
     const user = prompt("Enter your name");
 
-    var peer = new Peer(undefined, {
-        path: '/peerjs',
-        host: 'ppanonymouschat.herokuapp.com'
-    });
-
+    if(window.location.hostname == "localhost"){
+        var peer = new Peer(undefined, {
+            path: '/peerjs',
+            host: window.location.hostname,
+            port: 5000
+        });
+    }else{
+        var peer = new Peer(undefined, {
+            path: '/peerjs',
+            host: window.location.hostname
+        });    
+    }
     // let myVideoStream;
     // navigator.mediaDevices
     // .getUserMedia({
