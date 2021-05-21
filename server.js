@@ -1,48 +1,44 @@
 //require dependencies
+const { Socket } = require("dgram");
 const express = require("express");
 const app = express();
-const server = require("http").Server(app);
-const { v4: uuidv4 } = require("uuid");
+const server = require("http").Server(app); //create http server
+const port = process.env.PORT || 5000;
+const io = require('socket.io')(server); //create a socket io server
+const { v4: uuidv4 } = require("uuid"); //used to create unique room id
 
-app.use(require('cors')())
-
-const io = require("socket.io")(server, {
-    cors: {
-      origin: '*'
-    }
-});
-const { ExpressPeerServer } = require("peer");
+const { ExpressPeerServer } = require("peer"); //create express peer server
 const peerServer = ExpressPeerServer(server, {
     debug: true,
+    path: '/',
 });
-app.use("/peerjs", peerServer);
+app.use('/', peerServer); 
 
 //declare application of dependencies
-app.use(express.json());
 
 app.get("/", (req, res) => {
-    res.redirect(`/${uuidv4()}`);
+    res.redirect(`/${uuidv4()}`); //redirect to unique room
 });
 
-app.set("view engine", "ejs");
-app.use(express.static("assets"));
+app.set("view engine", "ejs"); // setting default template use to ejs
+app.use(express.static("assets")); // delaring assets folder as static to include it's files
 
 app.get("/:room", (req, res) => {
-    res.render("room", { roomId: req.params.room });
+    res.render("room", { roomId: req.params.room }); //pass room.ejs template
 });
 
-io.on("connection", (socket) => {
-    socket.on("join-room", (roomId, userId, userName) => {
-      socket.join(roomId);
-      socket.to(roomId).broadcast.emit("user-connected", userId);
-      socket.on("message", (message) => {
-        io.to(roomId).emit("createMessage", message, userName);
-      });
-    });
+io.on("connection", socket=>{ //on establishing a socket connection
+	socket.on("join-room", (roomId, userId, userName) => { //when peer joins the room
+		socket.join(roomId); //assign peer's socket in the room
+		socket.broadcast.emit("user-connected", userId); //send message of the peer joining to every other peer
+		socket.on("message", message => { //when a peer send's a message
+			io.to(roomId).emit("serverMessage", message, userName); //emit message to all peer clients
+		})
+	});
+	
 });
 
 //start server
-const port = process.env.PORT || 3030;
 server.listen(port, ()=>{
     console.log("Listening to the port "+ port);
 })
