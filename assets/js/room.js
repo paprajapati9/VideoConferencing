@@ -24,7 +24,7 @@ window.addEventListener("DOMContentLoaded", ()=>{
     const user = prompt("Enter your name");
 
     var peer = new Peer(undefined, {
-        path: '/',
+        path: '/peerjs',
         host: 'ppanonymouschat.herokuapp.com'
     });
 

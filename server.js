@@ -10,7 +10,7 @@ const { v4: uuidv4 } = require("uuid"); //used to create unique room id
 const { ExpressPeerServer } = require("peer"); //create express peer server
 const peerServer = ExpressPeerServer(server, {
     debug: true,
-    path: '/',
+    path: '/peerjs',
 });
 app.use('/', peerServer); 
 
