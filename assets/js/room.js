@@ -45,33 +45,46 @@ window.addEventListener("DOMContentLoaded", ()=>{
         myVideoStream = stream;
         addVideoStream(myVideo, stream);
 
-        peer.on("call", (call) => {
-            call.answer(stream);
-            const video = document.createElement("video");
-            call.on("stream", (userVideoStream) => {
-                addVideoStream(video, userVideoStream);
-            });
-        });
-
         socket.on("user-connected", (userId) => {
-            connectToNewUser(userId, stream);
+            console.log(userId, "user");
+            const call = peer.call(userId, stream);
+            console.log("New User Connected", call);
+            const vid = document.createElement("video");
+            call.on('stream', (remoteStream) => {
+                console.log("video stream new", remoteStream);
+                vid.srcObject = remoteStream;
+                vid.addEventListener("loadedmetadata", () => {
+                    vid.play();
+                    videoGrid.append(vid);
+                });
+            });
         });
     });
 
-    const connectToNewUser = (userId, stream) => {
-        const call = peer.call(userId, stream);
-        const video = document.createElement("video");
-        call.on("stream", (userVideoStream) => {
-            addVideoStream(video, userVideoStream);
+    peer.on("call", call => {
+        navigator.mediaDevices
+        .getUserMedia({
+            audio: true,
+            video: true,
+        })
+        .then((stream) => {
+            call.answer(stream);
+            const video = document.createElement("video");
+            call.on("stream", (peerVideoStream) => {
+                console.log("video stream new peer", peerVideoStream);
+                addVideoStream(video, peerVideoStream, true);
+            });
         });
-    };
+    });
 
     peer.on("open", (id) => {
         console.log(id, " user ", user);
         socket.emit("join-room", ROOM_ID, id, user);
     });
 
-    const addVideoStream = (video, stream) => {
+    const addVideoStream = (video, stream, peer=false) => {
+        if(peer) console.log("peer video being added", video);
+        else console.log("video being added", video);
         video.srcObject = stream;
         video.addEventListener("loadedmetadata", () => {
             video.play();
