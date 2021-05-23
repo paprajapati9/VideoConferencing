@@ -68,6 +68,7 @@ window.addEventListener("DOMContentLoaded", ()=>{
             video: true,
         })
         .then((stream) => {
+            myVideoStream = stream;
             call.answer(stream);
             const video = document.createElement("video");
             call.on("stream", (peerVideoStream) => {
